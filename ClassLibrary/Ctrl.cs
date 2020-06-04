@@ -33,7 +33,7 @@ namespace ClassLibrary
             Inverse,
             Calculate
         }
-        
+
         public enum MemoryCommand
         {
             Clear = 1,
@@ -63,7 +63,7 @@ namespace ClassLibrary
 
         public Editor ChangeMode(Processor.Mode mode)
         {
-            if (proc.currentMode == mode) 
+            if (proc.currentMode == mode)
                 return editor;
             memory.Reset(mode);
             switch (mode)
@@ -93,7 +93,7 @@ namespace ClassLibrary
                 return number.ToString();
 
             (n.SetNumberFromString(editor.numberString, n.numBase) as PNumber)?.ChangeBase(numBase);
-            
+
             return editor.SetNumber(n).numberString;
         }
 
@@ -225,11 +225,14 @@ namespace ClassLibrary
 
         public string ExecuteMemoryCommand(MemoryCommand cmd)
         {
+            if (state == CtrlState.Error)
+                return editor.numberString;
+
             switch (cmd)
             {
                 case MemoryCommand.Add:
-                    var memoryNumber1 = number is PNumber n1 
-                        ? n1.SetNumberFromString(editor.numberString, n1.numBase) 
+                    var memoryNumber1 = number is PNumber n1
+                        ? n1.SetNumberFromString(editor.numberString, n1.numBase)
                         : number.SetNumberFromString(editor.numberString);
                     memory.Add(memoryNumber1);
                     break;
@@ -238,7 +241,7 @@ namespace ClassLibrary
                     break;
                 case MemoryCommand.Write:
                     var memoryNumber2 = number is PNumber n2
-                        ? n2.SetNumberFromString(editor.numberString, n2.numBase) 
+                        ? n2.SetNumberFromString(editor.numberString, n2.numBase)
                         : number.SetNumberFromString(editor.numberString);
                     memory.WriteNumber(memoryNumber2);
                     break;
