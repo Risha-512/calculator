@@ -93,6 +93,7 @@ namespace ClassLibrary
                 return number.ToString();
 
             (n.SetNumberFromString(editor.numberString, n.numBase) as PNumber)?.ChangeBase(numBase);
+            proc.ResetProcess(GetMode());
 
             return editor.SetNumber(n).numberString;
         }
@@ -152,7 +153,7 @@ namespace ClassLibrary
                         ExecuteFunction(Processor.Function.Inverse);
                         break;
                     case CalculatorCommand.Calculate:
-                        if (state == CtrlState.Editing)
+                        if (state == CtrlState.Editing || state == CtrlState.OpChange)
                         {
                             if (proc.operation == Processor.Operation.None)
                             {
@@ -199,6 +200,19 @@ namespace ClassLibrary
 
         private void SetOperation(Processor.Operation op)
         {
+            if (proc.operation != Processor.Operation.None &&
+                (state == CtrlState.FuncDone || 
+                 state == CtrlState.Editing && editor.numberString != "0"))
+            {
+                if (state == CtrlState.Editing && editor.numberString != "0")
+                {
+                    SetNumberFromEditor();
+                    proc.SetRightNumber(number);
+                }
+                proc.ExecuteOperation();
+                editor.numberString = proc.GetLeftNumberString();
+            }
+
             state = CtrlState.OpChange;
             SetNumberFromEditor();
             proc.SetOperation(op);
